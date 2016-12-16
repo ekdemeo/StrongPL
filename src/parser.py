@@ -1,20 +1,7 @@
 import unicodedata
+import csv
 from string import Template
 from unicode import decode
-
-def isstrongid(value):
-        return (value[0] == 'G' or value[0] == 'H') and value[1:].isdigit()
-
-def replace_strongid_by_link(text):
-    text_split = text.split()
-    return ' '.join(map(replace_if_id, text_split))
-
-def replace_if_id(token):
-    if isstrongid(token):
-        return Link(token).format()
-    else:
-        return token
-        
 
 class Link:
     def __init__(self, id):
@@ -51,6 +38,50 @@ class Entry:
 
 
 
+def isstrongid(value):
+        return (value[0] == 'G' or value[0] == 'H') and value[1:].isdigit()
+
+def replace_strongid_by_link(text):
+    text_split = text.split()
+    return ' '.join(map(replace_if_id, text_split))
+
+def replace_if_id(token):
+    if isstrongid(token):
+        return Link(token).format()
+    else:
+        return token
+        
+
+
+def readcsv(path):
+    with open(path, 'r', encoding='utf-8') as csvfile:
+        next(csvfile)
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            e = Entry()
+            e.id = row[0]
+            merged_split = row[1].split(';')
+            words = merged_split[0].split(' ')
+            e.word_uni = words[1].strip()
+            e.word_ascii = words[2].strip('[]')
+            e.part_of_speech = merged_split[1].strip();
+            e.meaning1 = decode(row[2])
+            e.meaning2 = decode(row[3])
+            e.meaning3 = decode(row[4])
+            e.origin = replace_strongid_by_link(decode(row[5]))
+            e.occ_count = row[6]
+            e.occ = decode(row[7])
+            yield e.format()
+
+
+
+
+items = readcsv("..\data\slownik_stronga.csv")
+
+
+for r in items:
+    print(r)
+
 e = Entry();
 e.id = 'G13'
 e.word_uni = decode(r'ἄβυσσος')
@@ -62,4 +93,5 @@ e.meaning3 = decode(r'świat podziemny')
 e.occ_count = '9'
 e.origin = replace_strongid_by_link(decode(r'od G1 (jako partykuła przecząca) i odmiany G1037'))
 e.occ = decode('Łk 8:31; Rz 10:7; Ap 9:1; Ap 9:2; Ap 9:11; Ap 11:7; Ap 17:8; Ap 20:1; Ap 20:3')
+
 print(e.format())
