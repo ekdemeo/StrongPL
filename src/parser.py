@@ -86,12 +86,12 @@ def readcsv_entires(path):
 
 
 dict_path = "..\data\slownik_stronga.csv"
-db_path = '..\data\StrongPL_test.twm'
+db_path = '..\data\StrongPL.twm'
 
 conn = sqlite3.connect(db_path)
 entries = readcsv_entires(dict_path)
 
-entries = itertools.islice(entries, 100)
+#entries = itertools.islice(entries, 100)
 
 for entry in entries:
     id = str(int(entry.id)+1)

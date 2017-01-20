@@ -7,8 +7,8 @@ def decode(input):
 def uord(x): 
         num = ord(x)
         if num < 128:
-            return x;
+            return x
         else:
-            return '\\u' + str(ord(x));
+            return '\\u' + str(num) + ' '
 
 
